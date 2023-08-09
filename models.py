@@ -14,3 +14,12 @@ class UsernameUpdateModel(BaseModel):
     old_username:str
     new_username:str
     password:str
+
+
+class UserUpdateAddressModel(BaseModel):
+    name: str
+    new_address:str
+
+class UserUpdateModel_V2(BaseModel):
+    name: str
+    new_password: str

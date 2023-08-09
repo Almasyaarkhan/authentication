@@ -1,6 +1,5 @@
 import pymongo
 import certifi
-import json
 
 def db_connect():
 

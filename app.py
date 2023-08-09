@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Depends
 import uvicorn
-from models import User, UserUpdateModel, UsernameUpdateModel
+from models import User, UserUpdateModel, UsernameUpdateModel, UserUpdateAddressModel, UserUpdateModel_V2
 from db_manager import db_connect
+from decorators import is_user
 
 app = FastAPI()
 db = db_connect()
@@ -69,10 +70,31 @@ def update_username(user:UsernameUpdateModel):
     return "User not found or password is incorrect"
 
 
+@app.patch('/update_address')
+def update_address(user:UserUpdateAddressModel):
+
+    user_detail = db["addresses"].find({"name":user.name})
+
+    if len(list(user_detail)) > 0:
+        update_newaddress = db['addresses'].update_one({"name":user.name},{"$set":{
+            "address":user.new_address
+            }
+            })
+        return "new username updated succesfully"
+
+    return "update address sucessfully"
 
 
+@app.patch('/update_password_v2',dependencies=[Depends(is_user)])
+def update_password_v2(user:UserUpdateModel_V2):
+
+    update_user_password = db['users'].update_one({"name":user.name},{"$set":{"password":user.new_password}})
+    return "password updated succesfully"
 
 
+@app.patch('/update_user_details',dependencies=[Depends(is_user)])
+def update_user_details():
+    pass
 
 if __name__ == "__main__":
     uvicorn.run("app:app",port=8000,reload=True)
