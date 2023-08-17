@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends
 import uvicorn
-from models import User, UserUpdateModel, UsernameUpdateModel, UserUpdateAddressModel, UserUpdateModel_V2
+from models import *
 from db_manager import db_connect
 from decorators import is_user
 
@@ -88,13 +88,39 @@ def update_address(user:UserUpdateAddressModel):
 @app.patch('/update_password_v2',dependencies=[Depends(is_user)])
 def update_password_v2(user:UserUpdateModel_V2):
 
-    update_user_password = db['users'].update_one({"name":user.name},{"$set":{"password":user.new_password}})
+    update_user_password = db['users'].update_one({"name":user.name},{"$set":{
+        "password":user.new_password,
+        }
+        })
     return "password updated succesfully"
 
 
 @app.patch('/update_user_details',dependencies=[Depends(is_user)])
-def update_user_details():
-    pass
+def update_user_details(user_details:DetailsUpdateModel):
+
+    try:
+        update_user_details = db['user_details'].update_one({"name":user_details.name},{"$set":{
+        "name" :user_details.name,
+        "gender":user_details.gender,
+        "ph_number":user_details.ph_number,
+        "education":user_details.education,
+        "father_name":user_details.father_name
+        }
+        })
+
+        return "User details updated successfully"
+    except Exception as e:
+        return f"{e}"
+
+@app.delete('/delet_user_details/{name}/',dependencies=[Depends(is_user)])
+def delete_user_details(name:str):
+
+    try:
+        update_user_details = db['user_details'].delete_one({"name":name})
+
+        return "User details updated successfully"
+    except Exception as e:
+        return f"{e}"
 
 if __name__ == "__main__":
     uvicorn.run("app:app",port=8000,reload=True)

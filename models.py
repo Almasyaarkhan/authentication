@@ -23,3 +23,10 @@ class UserUpdateAddressModel(BaseModel):
 class UserUpdateModel_V2(BaseModel):
     name: str
     new_password: str
+
+class DetailsUpdateModel(BaseModel):
+    name:str
+    gender:str
+    ph_number:int
+    education:str
+    father_name:str
